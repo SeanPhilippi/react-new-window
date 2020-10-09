@@ -1,5 +1,5 @@
 {
-  "name": "react-new-window",
+  "name": "@hinaser/react-new-window",
   "description": "🔲 Pop a new window in React, using window.open",
   "version": "0.1.3",
   "keywords": [
@@ -11,8 +11,8 @@
   "main": "lib/react-new-window.js",
   "module": "es/react-new-window.js",
   "browser": "umd/react-new-window.js",
-  "repository": "git@github.com:rmariuzzo/react-new-window.git",
-  "author": "Rubens Mariuzzo <rubens@mariuzzo.com>",
+  "repository": "https://github.com/Hinaser/react-new-window",
+  "author": "Izumi Hoshino <rindo.hinase@gmail.com>",
   "license": "MIT",
   "files": [
     "lib",
@@ -21,6 +21,7 @@
     "types"
   ],
   "types": "./types/NewWindow.d.ts",
+  "publishConfig": { "registry": "https://npm.pkg.github.com/" },
   "dependencies": {
     "prop-types": "^15.7.2"
   },
