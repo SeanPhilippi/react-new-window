@@ -25,7 +25,7 @@ class NewWindow extends React.PureComponent {
     onOpen: null,
     onUnload: null,
     center: 'parent',
-    copyStyles: true
+    copyStyles: true,
   }
 
   /**
@@ -39,7 +39,7 @@ class NewWindow extends React.PureComponent {
     this.windowCheckerInterval = null
     this.released = false
     this.state = {
-      mounted: false
+      mounted: false,
     }
   }
 
@@ -175,7 +175,7 @@ NewWindow.propTypes = {
   onBlock: PropTypes.func,
   onOpen: PropTypes.func,
   center: PropTypes.oneOf(['parent', 'screen']),
-  copyStyles: PropTypes.bool
+  copyStyles: PropTypes.bool,
 }
 
 /**
@@ -191,55 +191,51 @@ NewWindow.propTypes = {
  */
 
 function copyStyles(source, target) {
-  Array.from(source.styleSheets).forEach(styleSheet => {
+  Array.from(source.styleSheets).forEach((styleSheet) => {
     // For <style> elements
-    let rules
-    try {
-      rules = styleSheet.cssRules
-    } catch (err) {
-      console.error(err)
-    }
-
-    // For @font-face rule, it must be loaded via <link href=''> because the
-    // rule contains relative path from the css file.
-    const isFontFaceRule =
-      rules &&
-      Object.values(rules).some(r => r instanceof CSSFontFaceRule) &&
-      styleSheet.href
-
-    if (rules && !isFontFaceRule) {
-      const newStyleEl = source.createElement('style')
-
-      // Write the text of each rule into the body of the style element
-      Array.from(styleSheet.cssRules).forEach(cssRule => {
-        const { cssText, type } = cssRule
-        let returnText = cssText
-        // Check if the cssRule type is CSSImportRule (3) or CSSFontFaceRule (5) to handle local imports on a about:blank page
-        // '/custom.css' turns to 'http://my-site.com/custom.css'
-        if ([3, 5].includes(type)) {
-          returnText = cssText
-            .split('url(')
-            .map(line => {
-              if (line[1] === '/') {
-                return `${line.slice(0, 1)}${
-                  window.location.origin
-                }${line.slice(1)}`
-              }
-              return line
-            })
-            .join('url(')
-        }
-        newStyleEl.appendChild(source.createTextNode(returnText))
-      })
-
-      target.head.appendChild(newStyleEl)
-    } else if (styleSheet.href) {
+    if (styleSheet.href) {
       // for <link> elements loading CSS from a URL
       const newLinkEl = source.createElement('link')
 
       newLinkEl.rel = 'stylesheet'
       newLinkEl.href = styleSheet.href
       target.head.appendChild(newLinkEl)
+    } else {
+      // For <style> elements
+      let rules
+      try {
+        rules = styleSheet.cssRules
+      } catch (err) {
+        console.error(err)
+      }
+
+      if (rules) {
+        const newStyleEl = source.createElement('style')
+
+        // Write the text of each rule into the body of the style element
+        Array.from(styleSheet.cssRules).forEach((cssRule) => {
+          const { cssText, type } = cssRule
+          let returnText = cssText
+          // Check if the cssRule type is CSSImportRule (3) or CSSFontFaceRule (5) to handle local imports on a about:blank page
+          // '/custom.css' turns to 'http://my-site.com/custom.css'
+          if ([3, 5].includes(type)) {
+            returnText = cssText
+              .split('url(')
+              .map((line) => {
+                if (line[1] === '/') {
+                  return `${line.slice(0, 1)}${
+                    window.location.origin
+                  }${line.slice(1)}`
+                }
+                return line
+              })
+              .join('url(')
+          }
+          newStyleEl.appendChild(source.createTextNode(returnText))
+        })
+
+        target.head.appendChild(newStyleEl)
+      }
     }
   })
 }
