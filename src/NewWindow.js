@@ -206,7 +206,7 @@ function copyStyles(source, target) {
       try {
         rules = styleSheet.cssRules
       } catch (err) {
-        console.error(err)
+        // console.error(err)
       }
 
       if (rules) {
